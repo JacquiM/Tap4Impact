@@ -1,33 +1,84 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>TAP4IMPACT</title>
-    <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TAP4IMPACT</title>
+  <link rel="stylesheet" href="style.css" />
+  <script defer src="script.js"></script>
 </head>
 <body>
-    <header>
-        <img src="logo.png" alt="TAP4IMPACT Logo" class="logo" />
-        <h1>For the People. By the People.</h1>
-        <p class="subheading">Real-time transparency into your donation's impact.</p>
-    </header>
-    <main>
-        <section id="impact">
-            <h2>Impact Tracker</h2>
-            <div class="hourglass">
-                <div class="sand" id="sand"></div>
-            </div>
-            <p id="donation-amount">R0 donated</p>
-        </section>
-        <section id="about">
-            <h2>About TAP4IMPACT</h2>
-            <p>TAP4IMPACT links digital donations with real-time updates to empower rural safety and farming communities across South Africa. This dashboard shows you exactly how your contributions are making a difference.</p>
-        </section>
-    </main>
-    <footer>
-        <p>© 2025 TAP4IMPACT. Built for Agri Securitas.</p>
-    </footer>
-    <script src="script.js"></script>
+<header>
+  <nav>
+    <a href='index.html'>Home</a> |
+    <a href='project.html'>The Project</a> |
+    <a href='how-it-works.html'>How It Works</a> |
+    <a href='tracker.html'>Tracker</a> |
+    <a href='projects.html'>Projects</a> |
+    <a href='sponsors.html'>Sponsors</a> |
+    <a href='social.html'>Blog & Social</a>
+  </nav>
+
+  <div class="hero-content">
+  <div class="hero-image">
+    <img src="assets/impact.jpg" alt="Impact">
+  </div>
+  <div class="hero-text">
+  <img src='assets/TAP4IMPACT.png' alt='TAP4IMPACT Logo' height='75%%' width="75%">
+  <br />
+  <br />
+
+    <p>TAP4IMPACT, a simple and powerful way for South Africans to give back.</p><br />
+    <p>By tapping on a digital donation screen, individuals can seamlessly contribute to the protection of farming communities.</p>
+    <p>This initiative boosts the financial resilience of the Trust Fund, ensuring lasting, community-based impact in rural areas.</p> <br /> <br /> <br />
+
+    <button class="donate-button">Make a Donation</button>
+  </div>
+</div>
+
+</header>
+
+<section class="donation-stats">
+  <div class="stat-block">
+    <h2>Total Raised</h2>
+    <p id="total-raised">R0.00</p>
+  </div>
+  <div class="stat-block">
+    <h2>Number of Donors</h2>
+    <p id="donor-count">0</p>
+  </div>
+</section>
+
+  <section class="about-impact">
+    <div class="card dark">
+      <h3>About TAP4IMPACT</h3>
+      <p>The agricultural communities of South Africa are the backbone of our nation, yet they face unique challenges that demand innovative solutions. The Agri Securitas Trust Fund, operating under the esteemed aegis of Agri SA, was founded in response to these pressing needs, inspired by the Rural Safety Summit held on October 10, 1998.</p>
+      <br />
+<p>The Fund is driven by a commitment to build safe and sustainable environments for the people who keep our nation fed. Through pioneering initiatives, we strengthen rural security and, in doing so, protect South Africa’s food security.
+</p>
+    </div>
+    <div class="icard img">
+      <img src="assets/impact 2.jpg" alt="impact">
+    </div>
+    <div class="card bright">
+     <h3>The Project: TAP4IMPACT</h3>
+      <p>At the forefront of these initiatives is TAP4IMPACT, a simple and powerful way for South Africans to give back. By tapping on a digital donation screen, individuals can seamlessly contribute to the protection of farming communities.</p>
+      <br />
+      <p>
+This initiative boosts the financial resilience of the Trust Fund, ensuring lasting, community-based impact in rural areas.
+</p>  
+    </div>
+  </section>
+
+  <section class="how-to-tap">
+    <h2>HOW TO TAP</h2>
+    <p>Tap. Scan. See the change.</p>
+    <button class="tap-button">Act Now</button>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 TAP4IMPACT | Built with purpose.</p>
+  </footer>
 </body>
 </html>
