@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TAP4IMPACT | Agri Securitas</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f2f2f2;
+      color: #333;
+    }
+    header, section, footer {
+      padding: 20px;
+      margin: 10px;
+      background: white;
+      border-radius: 8px;
+    }
+    h1, h2, h3 {
+      color: #006400;
+    }
+    .project-card {
+      background: #e6ffe6;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    .social-icons a {
+      margin-right: 10px;
+      text-decoration: none;
+      color: #006400;
+    }
+    .hourglass-section {
+      text-align: center;
+      margin-top: 20px;
+    }
+    .hourglass {
+      position: relative;
+      width: 60px;
+      height: 120px;
+      margin: 0 auto;
+      background: #ccc;
+      border-radius: 30px;
+      overflow: hidden;
+      box-shadow: inset 0 0 5px #666;
+    }
+    .sand.top,
+    .sand.bottom {
+      position: absolute;
+      width: 100%;
+      background: #f4d742;
+      transition: height 1s ease-in-out;
+    }
+    .sand.top {
+      top: 0;
+      height: 50%;
+      border-bottom: 2px solid #999;
+    }
+    .sand.bottom {
+      bottom: 0;
+      height: 0%;
+      border-top: 2px solid #999;
+    }
+    .neck {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: #666;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>For the People. By the People. A Seamless Tap. A Massive Impact.</h1>
+    <p>Do you know where your food comes from?<br />What is the story behind the barcode?</p>
+  </header>
+
+  <section class="intro">
+    <p>
+      The agricultural communities of South Africa are the backbone of our nation,
+      yet they face unique challenges that demand innovative solutions. The
+      Agri Securitas Trust Fund, operating under the esteemed aegis of Agri SA,
+      was founded in response to these pressing needs, inspired by the Rural Safety
+      Summit held on October 10, 1998.
+    </p>
+    <p>
+      The Fund is driven by a commitment to build safe and sustainable environments
+      for the people who keep our nation fed. Through pioneering initiatives, we
+      strengthen rural security and, in doing so, protect South Africa’s food security.
+    </p>
+  </section>
+
+  <section class="project">
+    <h2>The Project: TAP4IMPACT</h2>
+    <p>
+      TAP4IMPACT is a simple and powerful way for South Africans to give back.
+      By tapping on a digital donation screen, individuals can seamlessly contribute
+      to the protection of farming communities. This initiative boosts the financial
+      resilience of the Trust Fund, ensuring lasting, community-based impact in rural areas.
+    </p>
+  </section>
+
+  <section class="how-it-works">
+    <h2>How It Works</h2>
+    <ul>
+      <li><strong>Visual Progress:</strong> See real-time donation progress on TAP4IMPACT screens.</li>
+      <li><strong>Tap to Donate:</strong> Quick and effortless giving.</li>
+      <li><strong>Scan QR Code:</strong> View project impact, sponsors, and more.</li>
+    </ul>
+  </section>
+
+  <section class="tracker">
+    <h2>Live Donation Tracker</h2>
+    <div id="donation-stats">
+      <p><strong>Total Raised:</strong> R<span id="total-raised">0</span></p>
+      <p><strong>Number of Donors:</strong> <span id="donor-count">0</span></p>
+      <p><strong>Recent Contributions:</strong> <span id="recent-donations">None yet</span></p>
+    </div>
+  </section>
+
+  <section class="hourglass-section">
+    <h3>Visual Impact</h3>
+    <div class="hourglass">
+      <div class="sand top"></div>
+      <div class="neck"></div>
+      <div class="sand bottom" id="sand-bottom"></div>
+    </div>
+  </section>
+
+  <section class="projects">
+    <h2>Projects Funded</h2>
+    <div class="project-card">🎯 Safety Equipment Deployed</div>
+    <div class="project-card">🎓 Rural Training Sessions Hosted</div>
+    <div class="project-card">🗺️ Areas Secured</div>
+    <a href="#">Click here to view all Agri Securitas projects</a>
+  </section>
+
+  <section class="sponsors">
+    <h2>Sponsors</h2>
+    <p><strong>John Deere</strong> – Proud partners in rural security.</p>
+    <p><strong>We Buy Cars</strong> – Driving change where it matters.</p>
+    <a href="#">Become a Sponsor</a>
+  </section>
+
+  <footer>
+    <h2>Blog & Social Media</h2>
+    <div class="social-icons">
+      <a href="#">LinkedIn</a>
+      <a href="#">Facebook</a>
+      <a href="#">TikTok</a>
+      <a href="#">Instagram</a>
+    </div>
+  </footer>
+
+  <script>
+    const donationValue = 125000;
+    const goal = 200000;
+
+    const progressPercent = Math.min((donationValue / goal) * 100, 100);
+    document.getElementById("total-raised").innerText = donationValue.toLocaleString();
+    document.getElementById("donor-count").innerText = "532";
+    document.getElementById("recent-donations").innerText = "R500 by A. Smith";
+    document.getElementById("sand-bottom").style.height = `${progressPercent}%`;
+  </script>
+</body>
+</html>
