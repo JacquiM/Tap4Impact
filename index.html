@@ -22,7 +22,18 @@
 
   <div class="hero-content">
   <div class="hero-image">
-    <img src="assets/impact.jpg" alt="Impact">
+<section class="carousel-container">
+  <button class="carousel-btn prev" onclick="moveSlide(-1)">❮</button>
+
+  <div class="carousel-slide">
+    <img src="assets/carousel-images/01.jpg" alt="Slide 1" />
+    <img src="assets/carousel-images/02.jpg" alt="Slide 2" />
+    <img src="assets/carousel-images/03.jpg" alt="Slide 3" />
+    <img src="assets/carousel-images/04.jpg" alt="Slide 4" />
+  </div>
+  <button class="carousel-btn next" onclick="moveSlide(1)">❯</button>
+</section>
+
   </div>
   <div class="hero-text">
   <img src='assets/TAP4IMPACT.png' alt='TAP4IMPACT Logo' height='75%%' width="75%">
@@ -81,4 +92,64 @@ This initiative boosts the financial resilience of the Trust Fund, ensuring last
     <p>&copy; 2025 TAP4IMPACT | Built with purpose.</p>
   </footer>
 </body>
+
+<style type="text/css">
+.carousel-container {
+  position: relative;
+  width: fit-content;
+  max-width: 100%;
+  margin: 2em auto;
+  overflow: hidden;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.carousel-slide {
+  display: flex;
+  transition: transform 0.5s ease-in-out;
+}
+
+.carousel-slide img {
+  width: 100%;
+  height: auto;
+  flex-shrink: 0;
+  object-fit: stretch;
+}
+
+
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255,255,255,0.7);
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  padding: 0.5em 0.8em;
+  z-index: 1;
+  border-radius: 50%;
+}
+
+.carousel-btn.prev {
+  left: 10px;
+}
+
+.carousel-btn.next {
+  right: 10px;
+}
+
+
+</style>
+
+<script>
+  let currentIndex = 0;
+
+  function moveSlide(step) {
+    const slides = document.querySelector('.carousel-slide');
+    const totalSlides = slides.children.length;
+    currentIndex = (currentIndex + step + totalSlides) % totalSlides;
+    slides.style.transform = `translateX(-${currentIndex * 100}%)`;
+  }
+</script>
+
 </html>
