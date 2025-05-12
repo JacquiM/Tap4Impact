@@ -12,7 +12,8 @@ document.addEventListener('DOMContentLoaded', () => {
         .catch(error => console.error("Error fetching file:", error));
 });
 
-
+let iframe = document.querySelector("iframe");
+iframe.src += "?autoplay=1";
 
 
 let currentIndex = 0;

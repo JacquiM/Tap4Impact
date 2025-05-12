@@ -140,9 +140,9 @@ h1 {
     }
 
     .stat-block {
+        padding-top: 0.1%;
         width: 80%;
-        min-height: 80px !important; /* Prevent expansion */
-        max-height: 80px !important; /* Stop it from growing */
+        max-height: 80px !important;
     }
 }
 
