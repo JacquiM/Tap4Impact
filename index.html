@@ -2,222 +2,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TAP4IMPACT</title>
-  <link rel="stylesheet" href="style.css" />
-  <script defer src="script.js"></script>
-  <style>
-    
-:root {
-  --primary-color: #a3b720; /* greenish from logo */
-  --accent-color: #000000;  /* black */
-  --bg-light: #f8f8f8;
-  --text-dark: #222;
-  --card-bg: #ffffff;
-  --border-light: #e0e0e0;
-  --dark-card: #262626;
-}
-
-body {
-  font-family: Arial, sans-serif;
-  color: var(--dark-card);
-  margin: 0;
-  padding: 0;
-  background: #f9f4ef;
-}
-
-header {
-  background: var(--bg-light);
-  color: var(--dark-card);
-  padding: 20px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-}
-
-nav {
-  background: var(--primary-color);
-  padding: 12px 0;
-  text-align: center;
-}
-
-nav a {
-  color: white;
-  margin: 0 15px;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 16px;
-}
-
-h1 {
-  font-family: "Avenir Light", "Avenir", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 120px;
-  font-weight: 300; /* Light */
-  color: var(--dark-card);
-  margin: 0;
-  line-height: 1;
-}
-
-.tagline {
-  font-family: "Avenir Light", "Avenir", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 22px;
-  font-style: italic;
-  color: var(--primary-color); /* light lime green from your image */
-  border: 3px solid var(--primary-color);
-  border-radius: 40px;
-  padding: 10px 30px;
-  display: inline-block;
-  margin-top: 20px;
-}
-
-.donate-button {
-  background-color: var(--primary-color);
-  color: var(--text-dark);
-  border-radius: 40px;
-  padding: 10px 20px;
-  font-size: 16px;
-  border: none;
-  cursor: pointer;
-}
-
-.hero {
-  background: url('cheetah.png') no-repeat right center/cover;
-  color: #000;
-  padding: 3em 1em;
-}
-
-.hero-content {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start; /* ⬅️ aligns content to the top */
-  justify-content: space-between;
-  padding: 2em 2%;
-}
-
-.hero-text {
-  flex: 1 1 50%;
-  padding-right: 2em;
-  padding-left: 2.5%;
-  color: var(--dark-card);
-}
-
-.hero-image {
-  flex: 1 1 40%;
-  text-align: left;
-}
-
-.hero-image img {
-  max-width: 95%;
-  height: auto;
-  border-radius: 0px;
-}
-
-.donation-stats {
-  display: flex;
-  justify-content: center;
-  gap: 2rem;
-  padding: 2.5em 1em;
-  background: #f7fce1; /* soft green-tinted background */
-  border-top: 4px solid #a3b720;
-  border-bottom: 4px solid #a3b720;
-}
-
-.stat-block {
-  background: white;
-  border: 2px solid #a3b720;
-  border-radius: 16px;
-  padding: 1.5em 2em;
-  text-align: center;
-  box-shadow: 0 4px 12px rgba(163, 183, 32, 0.2);
-  flex: 0 1 250px;
-}
-
-.stat-block h2 {
-  color: #495e0a;
-  font-size: 1.5rem;
-  margin-bottom: 0.5em;
-}
-
-.stat-block p {
-  font-size: 2rem;
-  font-weight: bold;
-  color: #a3b720;
-  margin: 0;
-}
-
-
-.about-impact {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.card {
-  flex: 1 1 300px;
-  padding: 2em;
-  font-family: "Avenir", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  line-height: 1.6;
-}
-
-.card h3 {
-  font-size: 1.75rem;
-  margin-bottom: 1rem;
-}
-
-.card.dark {
-  background: var(--dark-card);
-  color: white;
-}
-
-.card.bright {
-  background: #005B4F;
-  color: white;
-}
-
-.icard {
-  flex: 1 1 300px;
-}
-
-.icard.img img {
-  width: 120%;
-  height: 100%;
-}
-
-.how-to-tap {
-  background: white;
-  color: #005B4F;
-  text-align: center;
-  padding: 2em;
-}
-
-.tap-button {
-  background-color: #005B4F;
-  color: white;
-  border-radius: 40px;
-  padding: 10px 20px;
-  font-size: 16px;
-  border: none;
-  cursor: pointer;
-}
-
-footer {
-  text-align: center;
-  padding: 1em;
-  background: var(--primary-color);
-  color: white;
-}
-  </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TAP4IMPACT</title>
+    <link rel="stylesheet" href="style.css" />
+    <script defer src="script.js"></script>
 </head>
 <body>
 <header>
-  <nav>
-    <a href='index.html'>Home</a> |
-    <a href='project.html'>The Project</a> |
-    <a href='how-it-works.html'>How It Works</a> |
-    <a href='tracker.html'>Tracker</a> |
-    <a href='projects.html'>Projects</a> |
-    <a href='sponsors.html'>Sponsors</a> |
-    <a href='social.html'>Blog & Social</a>
-  </nav>
-
   <div class="hero-content">
   <div class="hero-image">
 <section class="carousel-container">
@@ -234,120 +26,76 @@ footer {
 
   </div>
   <div class="hero-text">
-  <img src='assets/TAP4IMPACT.png' alt='TAP4IMPACT Logo' height='75%%' width="75%">
+  <img src='assets/TAP4IMPACT2.jpg' alt='TAP4IMPACT Logo' height='75%%' width="75%">
   <br />
   <br />
 
-    <p>TAP4IMPACT, a simple and powerful way for South Africans to give back.</p><br />
-    <p>By tapping on a digital donation screen, individuals can seamlessly contribute to the protection of farming communities.</p>
-    <p>This initiative boosts the financial resilience of the Trust Fund, ensuring lasting, community-based impact in rural areas.</p> <br /> <br /> <br />
-
-    <button class="donate-button">Make a Donation</button>
+  <p>Introducing The TAP4IMPACT Digital Screen</p>
+  <p>
+      A smart, innovative way to give - empowering everyday people to make a meaningful difference in South Africa’s agricultural communities. Our Mission
+      Our mission is to make giving simple, visible, and meaningful through the TAP4IMPACT digital screen. We strive to encourage and empower individuals and communities across South Africa to take real-time action to create safer agricultural environments and secure food security throughout the country.
+      By harnessing smart technology, we transform small acts of giving into powerful, lasting impact - One Tap at a Time.
+  </p>
   </div>
 </div>
 
 </header>
 
 <section class="donation-stats">
-  <div class="stat-block">
-    <h2>Total Raised</h2>
-    <p id="total-raised">R0.00</p>
-  </div>
-  <div class="stat-block">
-    <h2>Number of Donors</h2>
-    <p id="donor-count">0</p>
-  </div>
+    <div class="stat-block">
+        <h2>Total Raised</h2>
+        <p id="total-raised">R0.00</p>
+    </div>
+    <div class="stat-block">
+        <h2>Number of Donors</h2>
+        <p id="donor-count">0</p>
+    </div>
 </section>
 
   <section class="about-impact">
     <div class="card dark">
-      <h3>About TAP4IMPACT</h3>
-      <p>The agricultural communities of South Africa are the backbone of our nation, yet they face unique challenges that demand innovative solutions. The Agri Securitas Trust Fund, operating under the esteemed aegis of Agri SA, was founded in response to these pressing needs, inspired by the Rural Safety Summit held on October 10, 1998.</p>
-      <br />
-<p>The Fund is driven by a commitment to build safe and sustainable environments for the people who keep our nation fed. Through pioneering initiatives, we strengthen rural security and, in doing so, protect South Africa’s food security.
-</p>
+        <h3>Agri Securitas Trust Fund</h3>
+        <p>
+            South Africa’s agricultural communities are the heart of our nation. Yet these communities face mounting complex challenges, particularly concerning safety and sustainability.
+            Inspired by the landmark Rural Safety Summit of October 10, 1998, the Agri Securitas Trust Fund was founded under the valued patronage of Agri SA to confront these challenges with purpose and determination.
+            By funding strategically targeted, innovative projects, the Trust Fund plays a vital role in creating safer rural environments, helping to protect those who feed our nation and ensuring food security for the future.
+        </p>
     </div>
     <div class="icard img">
       <img src="assets/impact 2.jpg" alt="impact">
     </div>
     <div class="card bright">
-     <h3>The Project: TAP4IMPACT</h3>
-      <p>At the forefront of these initiatives is TAP4IMPACT, a simple and powerful way for South Africans to give back. By tapping on a digital donation screen, individuals can seamlessly contribute to the protection of farming communities.</p>
-      <br />
-      <p>
-This initiative boosts the financial resilience of the Trust Fund, ensuring lasting, community-based impact in rural areas.
-</p>  
+        <h3>
+            Funding Of Projects
+        </h3>
+        <p>
+            The Trust Fund’s ability to make a real difference depends on the financial support it receives. While regular fundraising events provide essential funding, long-term success relies on broader participation from individuals, businesses, and communities.
+            To ensure a more stable, sustainable income stream, Agri Securitas, in partnership with Idalia Holdings (Pty) Ltd, has introduced an exciting new initiative.
+        </p> 
+        <p>Want to see the full list? <a style="color: white" href="https://agrisecuritas.org/projects/eastern-cape" target="_blank">Click here</a> to view all Agri Securitas projects</p>
     </div>
   </section>
 
   <section class="how-to-tap">
-    <h2>HOW TO TAP</h2>
-    <p>Tap. Scan. See the change.</p>
-    <button class="tap-button">Act Now</button>
+      <h2>How TAP4IMPACT Works</h2>
+      <p>Easy Tap-to-Give</p>
+      <p>
+          Giving is as easy as tapping your bank card or phone. No forms. No hassle. Just one quick tap to make a difference - on the spot.
+          Scan and Explore
+      </p>
+      <p>Every screen features a unique QR code that connects directly to our TAP4IMPACT website, where you can:</p>
+      <div>
+          <ul>
+              <li>See exactly how your donation is being used!</li>
+              <li>Meet our valued partners and sponsors!</li>
+              <li>Learn about the projects you're helping to fund!</li>
+              <li>Track the real-world impact your support is making!</li>
+          </ul>
+      </div>
   </section>
 
   <footer>
     <p>&copy; 2025 TAP4IMPACT | Built with purpose.</p>
   </footer>
 </body>
-
-<style type="text/css">
-.carousel-container {
-  position: relative;
-  width: fit-content;
-  max-width: 100%;
-  margin: 2em auto;
-  overflow: hidden;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.carousel-slide {
-  display: flex;
-  transition: transform 0.5s ease-in-out;
-}
-
-.carousel-slide img {
-  width: 100%;
-  height: auto;
-  flex-shrink: 0;
-  object-fit: stretch;
-}
-
-
-.carousel-btn {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(255,255,255,0.7);
-  border: none;
-  font-size: 2rem;
-  cursor: pointer;
-  padding: 0.5em 0.8em;
-  z-index: 1;
-  border-radius: 50%;
-}
-
-.carousel-btn.prev {
-  left: 10px;
-}
-
-.carousel-btn.next {
-  right: 10px;
-}
-
-
-</style>
-
-<script>
-  let currentIndex = 0;
-
-  function moveSlide(step) {
-    const slides = document.querySelector('.carousel-slide');
-    const totalSlides = slides.children.length;
-    currentIndex = (currentIndex + step + totalSlides) % totalSlides;
-    slides.style.transform = `translateX(-${currentIndex * 100}%)`;
-  }
-</script>
-
 </html>
