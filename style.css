@@ -105,7 +105,7 @@ h1 {
     justify-content: center;
     gap: 2rem;
     padding: 2.5em 1em;
-    background: #f7fce1; /* soft green-tinted background */
+    background: var(--primary-color);
     border-top: 4px solid #a3b720;
     border-bottom: 4px solid #a3b720;
 }
