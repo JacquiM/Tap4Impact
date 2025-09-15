@@ -11,7 +11,7 @@ export default function Home() {
   const donationData = {
     totalRaised: "R 73,200.00",
     donorCount: 47,
-    impactMetric: "800+"
+    impactMetric: "32"
   };
 
   return (
