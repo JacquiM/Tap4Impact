@@ -1,5 +1,6 @@
-﻿################################################################################
-# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
-################################################################################
-
-/.vs
+node_modules
+dist
+.DS_Store
+server/public
+vite.config.ts.*
+*.tar.gz
