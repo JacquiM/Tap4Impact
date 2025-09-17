@@ -11,8 +11,6 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
-      <Route path="/Tap4Impact/" component={Home} />
-      <Route path="/Tap4Impact" component={Home} />
       {/* Fallback to 404 */}
       <Route component={NotFound} />
     </Switch>
