@@ -2,6 +2,13 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist/public",
   "devCommand": "npm run dev",
+  "redirects": [
+    {
+      "source": "/index.html",
+      "destination": "/",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/(.*)",
