@@ -42,7 +42,6 @@ jobs:
         run: npm run build:frontend
         env:
           GITHUB_PAGES: true
-          BASE_URL: /Tap4Impact/
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
