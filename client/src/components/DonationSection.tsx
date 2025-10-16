@@ -139,7 +139,7 @@ interface DonationAmount {
 
 export default function DonationSection() {
   const [donationType, setDonationType] = useState<"monthly" | "once">("monthly");
-  const [selectedAmount, setSelectedAmount] = useState<number>(315);
+  const [selectedAmount, setSelectedAmount] = useState<number>(100);
   const [customAmount, setCustomAmount] = useState<string>("");
   const [country, setCountry] = useState("ZA");
   const [currency, setCurrency] = useState("ZAR");
@@ -159,24 +159,26 @@ export default function DonationSection() {
       GBP: [20, 40, 75],
       CAD: [35, 65, 125],
       AUD: [40, 70, 140],
-      ZAR: [175, 315, 470],
+      // Updated ZAR presets to four Rand values requested by the user
+      ZAR: [100, 250, 500, 1000],
       JPY: [3000, 5500, 10500],
       CHF: [25, 45, 85],
       CNY: [180, 320, 650],
       INR: [2000, 3500, 7000]
     };
-    
+
     const amounts = baseAmounts[currency as keyof typeof baseAmounts] || baseAmounts.USD;
-    const impacts = [
+    const defaultImpacts = [
       "Helps fund fuel for rural patrols each month",
-      "Supports SMS alerting for three farm blocks monthly", 
-      "Contributes to a thermal camera for livestock protection"
+      "Supports SMS alerting for three farm blocks monthly",
+      "Contributes to a thermal camera for livestock protection",
+      "Enables community safety workshops and equipment distribution"
     ];
-    
+
     return amounts.map((amount, index) => ({
       value: amount,
       label: `${symbol}${amount}`,
-      impact: impacts[index]
+      impact: defaultImpacts[index] || defaultImpacts[defaultImpacts.length - 1]
     }));
   };
   
