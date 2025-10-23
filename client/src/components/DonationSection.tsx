@@ -139,7 +139,7 @@ interface DonationAmount {
 
 export default function DonationSection() {
   const [donationType, setDonationType] = useState<"monthly" | "once">("monthly");
-  const [selectedAmount, setSelectedAmount] = useState<number>(100);
+  const [selectedAmount, setSelectedAmount] = useState<number>(12432);
   const [customAmount, setCustomAmount] = useState<string>("");
   const [country, setCountry] = useState("ZA");
   const [currency, setCurrency] = useState("ZAR");
@@ -160,7 +160,7 @@ export default function DonationSection() {
       CAD: [35, 65, 125],
       AUD: [40, 70, 140],
       // Updated ZAR presets to four Rand values requested by the user
-      ZAR: [100, 250, 500, 1000],
+      ZAR: [12432],
       JPY: [3000, 5500, 10500],
       CHF: [25, 45, 85],
       CNY: [180, 320, 650],
