@@ -43,11 +43,11 @@ export default function Footer() {
                   variant="ghost" 
                   size="sm" 
                   className="justify-start p-0 h-auto text-muted-foreground hover:text-foreground"
-                  onClick={() => window.open('mailto:info@tap4.co.za', '_self')}
+                  onClick={() => window.open('mailto:info@tap4impact.co.za', '_self')}
                   data-testid="button-footer-contact"
                 >
                   <Mail className="w-4 h-4 mr-2" />
-                  info@tap4.co.za
+                  info@tap4impact.co.za
                 </Button>
                 <Button 
                   variant="ghost" 
