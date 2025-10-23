@@ -9,7 +9,7 @@ import Footer from "@/components/Footer";
 export default function Home() {
   // Updated with realistic totals based on actual project funding
   const donationData = {
-    totalRaised: "R 73,200.00",
+    totalRaised: "R 12,432.00",
     donorCount: 47,
     impactMetric: "800+"
   };
