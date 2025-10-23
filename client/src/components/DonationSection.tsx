@@ -193,7 +193,7 @@ export default function DonationSection() {
 
   const getProcessingFee = () => {
     const amount = getCurrentAmount();
-    return Math.round(amount * 0.02 * 100) / 100;
+    return Math.round(amount * 0.05 * 100) / 100;
   };
 
   const getTotalAmount = () => {
@@ -399,7 +399,7 @@ export default function DonationSection() {
                       data-testid="checkbox-cover-fees"
                     />
                     <label htmlFor="cover-fees" className="text-sm text-muted-foreground leading-relaxed">
-                      By adding 2% ({formatCurrency(getProcessingFee())}) to your donation, you could help cover processing fees so 
+                      By adding 5% ({formatCurrency(getProcessingFee())}) to your donation, you could help cover processing fees so 
                       that your donation goes further for rural safety initiatives.
                     </label>
                   </div>
