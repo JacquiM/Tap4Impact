@@ -3,11 +3,15 @@ import { Button } from "@/components/ui/button";
 export default function PartnersSection() {
   const partners = [
     {
-      name: "Agri Securitas",
-      logo: "/logos/agri-securitas-logo.png",
-      url: "https://agrisecuritas.org"
+      name: "John Deere",
+      logo: "/logos/John_Deere_logo.svg.png",
+      url: "https://www.deere.com/sub-saharan/en"
     },
-    // Add more partners here
+    {
+      name: "Idalia Holdings",
+      logo: "/logos/Idalia Holdings Logo.png",
+      url: "#"
+    }
   ];
 
   return (
@@ -25,7 +29,7 @@ export default function PartnersSection() {
           </div>
 
           {/* Partners Logo Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 items-center justify-items-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center justify-items-center max-w-2xl mx-auto">
             {partners.map((partner) => (
               <Button
                 key={partner.name}
