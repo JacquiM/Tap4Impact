@@ -11,6 +11,11 @@ export default function PartnersSection() {
       name: "Idalia Holdings",
       logo: "/logos/Idalia Holdings Logo.png",
       url: "#"
+    },
+    {
+      name: "WeBuyCars",
+      logo: "/logos/We Buy Cars Logo.png",
+      url: "https://www.webuycars.co.za"
     }
   ];
 
@@ -29,7 +34,7 @@ export default function PartnersSection() {
           </div>
 
           {/* Partners Logo Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center justify-items-center max-w-2xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 items-center justify-items-center max-w-4xl mx-auto">
             {partners.map((partner) => (
               <Button
                 key={partner.name}
