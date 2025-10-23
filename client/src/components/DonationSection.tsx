@@ -425,14 +425,7 @@ export default function DonationSection() {
                     className="w-full h-full object-cover object-center"
                     data-testid="img-impact"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent" />
-                  <div className="absolute bottom-0 left-0 right-0 p-6">
-                    <div className="bg-primary text-white p-4 rounded-md">
-                      <p className="text-sm font-medium" data-testid="text-impact-message">
-                        {getCurrentImpact()}
-                      </p>
-                    </div>
-                  </div>
+                    {/* Removed impact message and overlay */}
                 </div>
               </div>
             </div>
