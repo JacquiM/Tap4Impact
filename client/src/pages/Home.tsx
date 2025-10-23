@@ -4,6 +4,7 @@ import HowItWorksSection from "@/components/HowItWorksSection";
 import ProjectsSection from "@/components/ProjectsSection";
 import DonationSection from "@/components/DonationSection";
 import VideoSection from "@/components/VideoSection";
+import PartnersSection from "@/components/PartnersSection";
 import Footer from "@/components/Footer";
 
 export default function Home() {
@@ -26,6 +27,7 @@ export default function Home() {
       <DonationSection />
       <ProjectsSection />
       <VideoSection />
+      <PartnersSection />
       <Footer />
     </main>
   );
