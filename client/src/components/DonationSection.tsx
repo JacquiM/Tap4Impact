@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Heart } from "lucide-react";
-import impactImage from "@assets/WhatsApp Image 2025-09-15 at 21.01.33_a1649a4f_1757962936453.jpg";
+import impactImage from "@assets/vegetarian-impact-photo.jpg";
 
 // Country data with ISO codes
 const countries = [
