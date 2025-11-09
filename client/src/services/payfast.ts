@@ -69,8 +69,8 @@ class PayFastService {
       const formData = {
         merchant_id: ENV_CONFIG.PAYFAST_MERCHANT_ID,
         merchant_key: ENV_CONFIG.PAYFAST_MERCHANT_KEY,
-        return_url: "https://tap4impact.org",
-        cancel_url: "https://tap4impact.org",
+        return_url: "https://tap4impact.co.za",
+        cancel_url: "https://tap4impact.co.za",
         name_first: donorInfo.name.trim(),
         email_address: donorInfo.email.trim(),
         amount: amountForPayFast,
