@@ -1,11 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Heart } from "lucide-react";
-import impactImage from "@assets/vegetarian-impact-photo.jpg";
+import { Heart, Loader2 } from "lucide-react";
+import { yocoService, type DonorInfo } from "@/services/yoco";
+import { payFastService, type RecurringDonorInfo } from "@/services/payfast";
+import { useToast } from "@/hooks/use-toast";
+import impactImage from "@assets/WhatsApp Image 2025-09-15 at 21.01.33_a1649a4f_1757962936453.jpg";
 
 // Country data with ISO codes
 const countries = [
@@ -142,8 +145,35 @@ export default function DonationSection() {
   const [selectedAmount, setSelectedAmount] = useState<number>(100);
   const [customAmount, setCustomAmount] = useState<string>("");
   const [country, setCountry] = useState("ZA");
-  const [currency, setCurrency] = useState("ZAR");
+  const currency = "ZAR"; // Only supporting ZAR
   const [coverFees, setCoverFees] = useState(false);
+  const [donorName, setDonorName] = useState("");
+  const [donorEmail, setDonorEmail] = useState("");
+  const [isProcessing, setIsProcessing] = useState(false);
+  const { toast } = useToast();
+
+  // Handle return from PayFast
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const paymentStatus = urlParams.get('payment');
+    
+    if (paymentStatus === 'success') {
+      toast({
+        title: "Payment Successful!",
+        description: "Thank you for setting up your recurring donation. You will receive a confirmation email from PayFast.",
+      });
+      // Clean up URL
+      window.history.replaceState({}, '', window.location.pathname);
+    } else if (paymentStatus === 'cancelled') {
+      toast({
+        title: "Payment Cancelled",
+        description: "Your payment was cancelled. You can try again whenever you're ready.",
+        variant: "destructive",
+      });
+      // Clean up URL
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, [toast]);
 
   const getCurrencySymbol = () => {
     const currencyInfo = currencies[currency as keyof typeof currencies];
@@ -208,28 +238,15 @@ export default function DonationSection() {
   };
 
   const formatCurrency = (amount: number) => {
-    const currencyInfo = currencies[currency as keyof typeof currencies];
-    if (!currencyInfo) {
-      return new Intl.NumberFormat('en-ZA', {
-        style: 'currency',
-        currency: 'ZAR',
-        minimumFractionDigits: 2
-      }).format(amount);
-    }
-    
-    return new Intl.NumberFormat(currencyInfo.locale, {
+    return new Intl.NumberFormat('en-ZA', {
       style: 'currency',
-      currency: currency,
-      minimumFractionDigits: currency === 'JPY' || currency === 'KRW' || currency === 'VND' ? 0 : 2
+      currency: 'ZAR',
+      minimumFractionDigits: 2
     }).format(amount);
   };
   
   const handleCountryChange = (countryCode: string) => {
     setCountry(countryCode);
-    const selectedCountry = countries.find(c => c.code === countryCode);
-    if (selectedCountry) {
-      setCurrency(selectedCountry.currency);
-    }
   };
 
   const handleAmountSelect = (amount: number) => {
@@ -242,14 +259,130 @@ export default function DonationSection() {
     setSelectedAmount(0);
   };
 
-  const handleDonate = () => {
-    console.log('Donation submitted:', {
-      type: donationType,
-      amount: getCurrentAmount(),
-      coverFees,
-      total: getTotalAmount()
-    });
-    // Note: Payment processing not implemented - design only
+  const handleDonate = async () => {
+    if (!donorName.trim()) {
+      toast({
+        title: "Missing Information",
+        description: "Please enter your name to continue.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!donorEmail.trim()) {
+      toast({
+        title: "Missing Information", 
+        description: "Please enter your email address to continue.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const amount = getTotalAmount();
+    if (amount <= 0) {
+      toast({
+        title: "Invalid Amount",
+        description: "Please enter a valid donation amount.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsProcessing(true);
+
+    try {
+      if (donationType === "monthly") {
+        // Use PayFast for recurring donations
+        console.log('Processing recurring payment with PayFast, amount:', amount);
+        
+        const recurringDonorInfo: RecurringDonorInfo = {
+          name: donorName.trim(),
+          email: donorEmail.trim(),
+          amount: amount,
+          frequency: 'monthly'
+        };
+
+        await payFastService.processRecurringPayment(
+          amount,
+          'monthly',
+          recurringDonorInfo,
+          'Tap4Impact Monthly Donation'
+        );
+        
+        toast({
+          title: "Redirecting to PayFast",
+          description: "You will be redirected to complete your recurring donation setup.",
+        });
+        
+        // Don't re-enable button - we're navigating away to PayFast
+        // Button will be re-enabled when user returns to the page
+      } else {
+        // Use Yoco for one-time donations
+        console.log('Processing one-time payment with Yoco, amount:', amount);
+        
+        // Check SDK status
+        const sdkStatus = yocoService.getSDKStatus();
+        console.log('Yoco SDK Status:', sdkStatus);
+        
+        if (!sdkStatus.loaded) {
+          const errorMessage = sdkStatus.error || "Payment system is currently unavailable. Please check your internet connection and try again.";
+          toast({
+            title: "Payment System Unavailable",
+            description: errorMessage,
+            variant: "destructive",
+          });
+          setIsProcessing(false);
+          return;
+        }
+        
+        const donorInfo: DonorInfo = {
+          name: donorName.trim(),
+          email: donorEmail.trim(),
+          phone: "", // Phone field not currently in form
+        };
+
+        try {
+          const result = await yocoService.processPayment(amount, donorInfo);
+
+          if (result.success) {
+            toast({
+              title: "Payment Successful!",
+              description: `Thank you for your donation of ${formatCurrency(amount)}. Your contribution will help support agricultural safety initiatives.`,
+            });
+            
+            // Reset form
+            setDonorName("");
+            setDonorEmail("");
+            setCustomAmount("");
+            setSelectedAmount(315);
+            setCoverFees(false);
+          }
+        } catch (yocoError: any) {
+          // Handle Yoco payment errors (user cancelled or payment failed)
+          if (yocoError.message && !yocoError.message.includes('cancelled')) {
+            toast({
+              title: "Payment Error",
+              description: yocoError.message,
+              variant: "destructive",
+            });
+          }
+          // If user just closed the modal, don't show an error
+        }
+        
+        // Always re-enable button for one-time donations (whether success, error, or cancelled)
+        setIsProcessing(false);
+      }
+    } catch (error: any) {
+      console.error('Payment error:', error);
+      const errorMessage = error.message || "An unexpected error occurred. Please try again.";
+      toast({
+        title: "Payment Error",
+        description: errorMessage,
+        variant: "destructive",
+      });
+      // Only re-enable on error
+      setIsProcessing(false);
+    }
   };
 
   return (
@@ -329,23 +462,6 @@ export default function DonationSection() {
                       </SelectContent>
                     </Select>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">
-                      Currency
-                    </label>
-                    <Select value={currency} onValueChange={setCurrency}>
-                      <SelectTrigger data-testid="select-currency">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="max-h-64 overflow-y-auto">
-                        {Object.entries(currencies).map(([code, info]) => (
-                          <SelectItem key={code} value={code}>
-                            {info.symbol} - {code}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
                 </div>
 
                 {/* Donation Amount */}
@@ -389,6 +505,45 @@ export default function DonationSection() {
                   </div>
                 </div>
 
+                {/* Donor Information */}
+                <div className="mb-6">
+                  <h4 className="text-lg font-medium text-foreground mb-4">
+                    Your Information
+                  </h4>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-foreground mb-2">
+                        Full Name *
+                      </label>
+                      <Input
+                        type="text"
+                        placeholder="Enter your full name"
+                        value={donorName}
+                        onChange={(e) => setDonorName(e.target.value)}
+                        className="w-full"
+                        data-testid="input-donor-name"
+                        required
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-foreground mb-2">
+                        Email Address *
+                      </label>
+                      <Input
+                        type="email"
+                        placeholder="Enter your email"
+                        value={donorEmail}
+                        onChange={(e) => setDonorEmail(e.target.value)}
+                        className="w-full"
+                        data-testid="input-donor-email"
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+
                 {/* Processing Fee */}
                 <div className="bg-muted/50 p-4 rounded-md mb-6">
                   <div className="flex items-start space-x-3">
@@ -408,11 +563,19 @@ export default function DonationSection() {
                 {/* Donate Button */}
                 <Button 
                   size="lg" 
-                  className="w-full bg-primary hover:bg-primary/90 text-white py-4 text-lg font-semibold uppercase tracking-wide"
+                  className="w-full bg-primary hover:bg-primary/90 text-white py-4 text-lg font-semibold uppercase tracking-wide disabled:opacity-50"
                   onClick={handleDonate}
+                  disabled={isProcessing}
                   data-testid="button-donate-submit"
                 >
-                  Donate {donationType === "monthly" ? "Monthly" : "Now"} • {formatCurrency(getTotalAmount())}
+                  {isProcessing ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Processing...
+                    </>
+                  ) : (
+                    <>Donate {donationType === "monthly" ? "Monthly" : "Now"} • {formatCurrency(getTotalAmount())}</>
+                  )}
                 </Button>
               </div>
 

@@ -20,6 +20,12 @@ export const donations = pgTable("donations", {
   projectId: uuid("project_id").references(() => projects.id),
   paymentMethod: varchar("payment_method", { length: 50 }).notNull().default("tap"),
   status: varchar("status", { length: 20 }).notNull().default("completed"),
+  // Recurring payment fields
+  isRecurring: boolean("is_recurring").notNull().default(false),
+  subscriptionId: text("subscription_id"), // PayFast token
+  frequency: varchar("frequency", { length: 20 }), // monthly, quarterly, biannually, annual
+  nextPaymentDate: timestamp("next_payment_date"),
+  subscriptionStatus: varchar("subscription_status", { length: 20 }), // active, cancelled, paused
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -62,9 +68,11 @@ export const projectsRelations = relations(projects, ({ many }) => ({
 
 // Validation constants
 const VALID_CURRENCIES = ["ZAR", "USD", "EUR", "GBP", "CAD", "AUD"] as const;
-const VALID_PAYMENT_METHODS = ["tap", "card", "bank_transfer", "crypto"] as const;
+const VALID_PAYMENT_METHODS = ["tap", "card", "bank_transfer", "crypto", "payfast"] as const;
 const VALID_PROJECT_STATUSES = ["active", "completed", "paused", "cancelled"] as const;
 const VALID_DONATION_STATUSES = ["completed", "pending", "failed", "refunded"] as const;
+const VALID_FREQUENCIES = ["monthly", "quarterly", "biannually", "annual"] as const;
+const VALID_SUBSCRIPTION_STATUSES = ["active", "cancelled", "paused", "expired"] as const;
 
 // Base validation schemas
 export const uuidSchema = z.string().uuid("Invalid UUID format");
@@ -95,6 +103,11 @@ export const insertDonationSchema = createInsertSchema(donations).pick({
   donorEmail: true,
   projectId: true,
   paymentMethod: true,
+  isRecurring: true,
+  subscriptionId: true,
+  frequency: true,
+  nextPaymentDate: true,
+  subscriptionStatus: true,
 }).extend({
   amount: positiveDecimalSchema,
   currency: z.enum(VALID_CURRENCIES, {
@@ -106,6 +119,15 @@ export const insertDonationSchema = createInsertSchema(donations).pick({
   paymentMethod: z.enum(VALID_PAYMENT_METHODS, {
     errorMap: () => ({ message: `Payment method must be one of: ${VALID_PAYMENT_METHODS.join(", ")}` })
   }),
+  isRecurring: z.boolean().optional(),
+  subscriptionId: z.string().optional(),
+  frequency: z.enum(VALID_FREQUENCIES, {
+    errorMap: () => ({ message: `Frequency must be one of: ${VALID_FREQUENCIES.join(", ")}` })
+  }).optional(),
+  nextPaymentDate: z.date().optional(),
+  subscriptionStatus: z.enum(VALID_SUBSCRIPTION_STATUSES, {
+    errorMap: () => ({ message: `Subscription status must be one of: ${VALID_SUBSCRIPTION_STATUSES.join(", ")}` })
+  }).optional(),
 });
 
 export const insertProjectSchema = createInsertSchema(projects).pick({

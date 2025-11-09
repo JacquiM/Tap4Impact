@@ -21,6 +21,14 @@
   </head>
   <body>
     <div id="root"></div>
+    
+    <!-- Yoco Payment SDK -->
+    <script 
+      src="https://js.yoco.com/sdk/v1/yoco-sdk-web.js" 
+      onload="console.log('Yoco SDK loaded successfully'); window.yocoSDKLoaded = true;" 
+      onerror="console.error('Failed to load Yoco SDK'); window.yocoSDKLoaded = false; window.yocoSDKError = 'Payment system unavailable. Please try again later.';"
+    ></script>
+    
     <script type="module" src="/src/main.tsx"></script>
     <!-- This is a replit script which adds a banner on the top of the page when opened in development mode outside the replit environment -->
     <script type="text/javascript" src="https://replit.com/public/js/replit-dev-banner.js"></script>

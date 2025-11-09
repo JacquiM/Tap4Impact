@@ -28,6 +28,8 @@ export interface IStorage {
   createDonation(donation: InsertDonation): Promise<Donation>;
   getDonations(): Promise<Donation[]>;
   getDonationsByProject(projectId: string): Promise<Donation[]>;
+  getDonationBySubscriptionId(subscriptionId: string): Promise<Donation | undefined>;
+  updateDonationSubscriptionStatus(subscriptionId: string, status: string): Promise<void>;
   
   // Project methods
   getProjects(): Promise<Project[]>;
@@ -78,7 +80,7 @@ export class DatabaseStorage implements IStorage {
   // Donation methods
   async createDonation(donation: InsertDonation): Promise<Donation> {
     // Use transaction to ensure data consistency
-    return await db.transaction(async (tx) => {
+    return await db.transaction(async (tx: any) => {
       // Create the donation
       const [newDonation] = await tx
         .insert(donations)
@@ -142,6 +144,25 @@ export class DatabaseStorage implements IStorage {
       .from(donations)
       .where(eq(donations.projectId, projectId))
       .orderBy(desc(donations.createdAt));
+  }
+
+  async getDonationBySubscriptionId(subscriptionId: string): Promise<Donation | undefined> {
+    const [donation] = await db
+      .select()
+      .from(donations)
+      .where(eq(donations.subscriptionId, subscriptionId))
+      .orderBy(desc(donations.createdAt))
+      .limit(1);
+    return donation || undefined;
+  }
+
+  async updateDonationSubscriptionStatus(subscriptionId: string, status: string): Promise<void> {
+    await db
+      .update(donations)
+      .set({ 
+        subscriptionStatus: status,
+      })
+      .where(eq(donations.subscriptionId, subscriptionId));
   }
 
   // Project methods

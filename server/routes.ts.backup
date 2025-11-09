@@ -1,0 +1,556 @@
+import type { Express } from "express";
+import { createServer, type Server } from "http";
+import { 
+  generatePayFastSignature, 
+  validatePayFastSignature,
+  validatePayFastIP,
+  type PayFastData
+} from "./payfast-utils";
+
+export async function registerRoutes(app: Express): Promise<Server> {
+  // Health check endpoint
+  app.get("/api/health", (req, res) => {
+    res.json({ status: "healthy", timestamp: new Date().toISOString() });
+  });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ error: "Invalid donation data", details: error.errors });
+      } else {
+        console.error('Error creating donation:', error);
+        res.status(500).json({ error: "Failed to create donation" });
+      }
+    }
+  });
+
+  app.get("/api/donations", async (req, res) => {
+    try {
+      const donations = await storage.getDonations();
+      res.json(donations);
+    } catch (error) {
+      console.error('Error fetching donations:', error);
+      res.status(500).json({ error: "Failed to fetch donations" });
+    }
+  });
+
+  app.get("/api/donations/project/:projectId", validateUUID("projectId"), async (req, res) => {
+    try {
+      const { projectId } = req.params;
+      
+      // Validate project exists
+      const projectExists = await storage.getProject(projectId);
+      if (!projectExists) {
+        return res.status(404).json({ 
+          error: "Not Found", 
+          message: "Project not found" 
+        });
+      }
+      
+      const donations = await storage.getDonationsByProject(projectId);
+      res.json(donations);
+    } catch (error) {
+      console.error('Error fetching project donations:', error);
+      res.status(500).json({ error: "Failed to fetch project donations" });
+    }
+  });
+
+  // Projects endpoints
+  app.get("/api/projects", async (req, res) => {
+    try {
+      const projects = await storage.getProjects();
+      res.json(projects);
+    } catch (error) {
+      console.error('Error fetching projects:', error);
+      res.status(500).json({ error: "Failed to fetch projects" });
+    }
+  });
+
+  app.get("/api/projects/featured", async (req, res) => {
+    try {
+      const projects = await storage.getFeaturedProjects();
+      res.json(projects);
+    } catch (error) {
+      console.error('Error fetching featured projects:', error);
+      res.status(500).json({ error: "Failed to fetch featured projects" });
+    }
+  });
+
+  app.get("/api/projects/:id", validateUUID("id"), async (req, res) => {
+    try {
+      const { id } = req.params;
+      const project = await storage.getProject(id);
+      if (!project) {
+        return res.status(404).json({ 
+          error: "Not Found", 
+          message: "Project not found" 
+        });
+      }
+      res.json(project);
+    } catch (error) {
+      console.error('Error fetching project:', error);
+      res.status(500).json({ error: "Failed to fetch project" });
+    }
+  });
+
+  app.post("/api/projects", requireAdminAuth, async (req, res) => {
+    try {
+      const validatedData = insertProjectSchema.parse(req.body);
+      const project = await storage.createProject(validatedData);
+      res.status(201).json(project);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ error: "Invalid project data", details: error.errors });
+      } else {
+        console.error('Error creating project:', error);
+        res.status(500).json({ error: "Failed to create project" });
+      }
+    }
+  });
+
+  app.put("/api/projects/:id", requireAdminAuth, validateUUID("id"), async (req, res) => {
+    try {
+      const { id } = req.params;
+      const validatedData = updateProjectSchema.parse(req.body);
+      const project = await storage.updateProject(id, validatedData);
+      if (!project) {
+        return res.status(404).json({ 
+          error: "Not Found", 
+          message: "Project not found" 
+        });
+      }
+      res.json(project);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ error: "Invalid project data", details: error.errors });
+      } else {
+        console.error('Error updating project:', error);
+        res.status(500).json({ error: "Failed to update project" });
+      }
+    }
+  });
+
+  // Yoco payment endpoints
+  app.post("/api/yoco/create-payment", async (req, res) => {
+    try {
+      const { amountInCents, currency = 'ZAR', metadata = {} } = req.body;
+
+      if (!amountInCents || amountInCents <= 0) {
+        return res.status(400).json({ 
+          error: "Bad Request", 
+          message: "Amount must be greater than 0" 
+        });
+      }
+
+      const axios = (await import('axios')).default;
+      
+      // Yoco API requires different format - create a checkout session
+      const response = await axios.post('https://api.yoco.com/v1/charges/', {
+        amount: parseInt(amountInCents),
+        currency: currency.toLowerCase(),
+        metadata
+      }, {
+        headers: {
+          'Authorization': `Bearer ${process.env.YOCO_SECRET_KEY}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      res.json({ paymentId: response.data.id });
+    } catch (error: any) {
+      console.error('Error creating Yoco payment:', error.response?.data || error.message);
+      res.status(500).json({ 
+        error: "Failed to create payment",
+        message: error.response?.data?.message || error.message
+      });
+    }
+  });
+
+  app.post("/api/yoco/verify-payment", async (req, res) => {
+    try {
+      const { paymentId, donorInfo, amount } = req.body;
+
+      if (!paymentId) {
+        return res.status(400).json({ 
+          error: "Bad Request", 
+          message: "Payment ID is required" 
+        });
+      }
+
+      // Check if this is a test payment (for development)
+      if (paymentId.startsWith('ch_test_') || paymentId.includes('test') || process.env.NODE_ENV === 'development') {
+        console.log('🧪 Development mode: Simulating successful payment verification for test payment:', paymentId);
+        
+        // Create donation record for test payment
+        const donationData = {
+          amount: amount.toString(),
+          currency: 'ZAR' as const,
+          donorName: donorInfo?.name,
+          donorEmail: donorInfo?.email,
+          paymentMethod: 'card' as const
+        };
+        
+        const donation = await storage.createDonation(donationData);
+        
+        return res.json({ 
+          success: true, 
+          payment: {
+            id: paymentId,
+            status: 'successful',
+            amount: amount * 100, // Convert back to cents for consistency
+            currency: 'ZAR'
+          },
+          donation 
+        });
+      }
+
+      const axios = (await import('axios')).default;
+      
+      const response = await axios.get(`https://api.yoco.com/v1/charges/${paymentId}`, {
+        headers: {
+          'Authorization': `Bearer ${process.env.YOCO_SECRET_KEY}`
+        }
+      });
+
+      const payment = response.data;
+      
+      // Check if payment was successful
+      if (payment.status === 'successful') {
+        // Create donation record using the provided data
+        const donationData = {
+          amount: amount.toString(),
+          currency: 'ZAR' as const,
+          donorName: donorInfo?.name,
+          donorEmail: donorInfo?.email,
+          paymentMethod: 'card' as const
+        };
+        
+        const donation = await storage.createDonation(donationData);
+        
+        res.json({ 
+          success: true, 
+          payment,
+          donation 
+        });
+      } else {
+        res.json({ 
+          success: false, 
+          payment 
+        });
+      }
+    } catch (error: any) {
+      console.error('Error verifying Yoco payment:', error.response?.data || error.message);
+      res.status(500).json({ 
+        error: "Failed to verify payment",
+        message: error.response?.data?.message || error.message
+      });
+    }
+  });
+
+  // Health check endpoint
+  app.get("/api/health", (req, res) => {
+    res.json({ status: "healthy", timestamp: new Date().toISOString() });
+  });
+
+  // PayFast endpoints for recurring donations
+  
+  /**
+   * Generate signature for PayFast form
+   */
+  /**
+   * Create PayFast payment URL (following the redirect pattern)
+   */
+  app.post("/api/payfast/create-payment", async (req, res) => {
+    try {
+      const { amount, frequency, name, email } = req.body;
+      
+      console.log('📝 Creating PayFast payment:', { amount, frequency, name, email });
+      
+      // Calculate billing date (tomorrow)
+      const billingDate = new Date();
+      billingDate.setDate(billingDate.getDate() + 1);
+      const formattedDate = billingDate.toISOString().split('T')[0];
+
+      // Map frequency to PayFast codes
+      const frequencyMap: Record<string, string> = {
+        'monthly': '3',
+        'quarterly': '4',
+        'biannually': '5',
+        'annual': '6'
+      };
+
+      // Build payment data with subscription fields
+      const paymentData: Record<string, string> = {
+        merchant_id: process.env.PAYFAST_MERCHANT_ID || '10000100',
+        merchant_key: process.env.PAYFAST_MERCHANT_KEY || '46f0cd694581a',
+        return_url: "https://tap4impact.org",
+        cancel_url: "https://tap4impact.org",
+        name_first: name.trim(),
+        email_address: email.trim(),
+        amount: Number(amount).toFixed(2),
+        item_name: "Monthly Donation",
+        subscription_type: "1", // 1 = subscription
+        billing_date: formattedDate,
+        recurring_amount: Number(amount).toFixed(2),
+        frequency: frequencyMap[frequency] || '3',
+        cycles: "0" // 0 = indefinite
+      };
+
+      // Get passphrase
+      const passphrase = process.env.PAYFAST_PASSPHRASE;
+
+      // Generate signature using utility function
+      const signature = generatePayFastSignature(paymentData, passphrase);
+
+      // Add signature to form data
+      const formData = {
+        ...paymentData,
+        signature
+      };
+
+      console.log('� Complete form data being sent to frontend:');
+      Object.entries(formData).forEach(([key, value]) => {
+        console.log(`  ${key} = ${value}`);
+      });
+
+      // Build base URL
+      const baseUrl = process.env.PAYFAST_MODE === "sandbox"
+        ? "https://sandbox.payfast.co.za/eng/process"
+        : "https://www.payfast.co.za/eng/process";
+
+      console.log('🚀 Payment form data prepared');
+
+      // Return URL and form data for POST submission
+      res.json({ url: baseUrl, formData });
+    } catch (error: any) {
+      console.error('❌ Error creating PayFast payment:', error);
+      res.status(500).json({ 
+        error: "Failed to create payment",
+        message: error.message
+      });
+    }
+  });
+
+  app.post("/api/payfast/generate-signature", async (req, res) => {
+    try {
+      const formData = req.body as PayFastData;
+      
+      console.log('📝 Generating signature for data:', JSON.stringify(formData, null, 2));
+      
+      // Log each field individually for debugging
+      console.log('\n🔍 Individual fields:');
+      Object.entries(formData).sort(([a], [b]) => a.localeCompare(b)).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== '') {
+          console.log(`  ${key} = "${value}" (length: ${value.toString().length})`);
+        }
+      });
+      
+      // Get passphrase from environment if set
+      const passphrase = process.env.PAYFAST_PASSPHRASE;
+      
+      if (passphrase) {
+        console.log('🔑 Using passphrase for signature generation');
+      } else {
+        console.log('⚠️ No passphrase configured - generating signature without passphrase');
+      }
+      
+      // Generate signature
+      const signature = generatePayFastSignature(formData, passphrase);
+      
+      console.log('✅ Final signature to send:', signature);
+      
+      res.json({ signature });
+    } catch (error: any) {
+      console.error('❌ Error generating PayFast signature:', error);
+      res.status(500).json({ 
+        error: "Failed to generate signature",
+        message: error.message
+      });
+    }
+  });
+
+  /**
+   * PayFast ITN (Instant Transaction Notification) endpoint
+   * This is called by PayFast to notify us of payment status
+   */
+  app.post("/api/payfast/notify", async (req, res) => {
+    try {
+      console.log('📬 Received PayFast ITN:', req.body);
+      
+      const pfData = req.body as PayFastData;
+      const passphrase = process.env.PAYFAST_PASSPHRASE;
+      
+      // 1. Validate signature
+      const isValidSignature = validatePayFastSignature(pfData, passphrase);
+      if (!isValidSignature) {
+        console.error('❌ Invalid PayFast signature');
+        return res.status(400).send('Invalid signature');
+      }
+      
+      // 2. Validate IP address (optional but recommended)
+      const clientIP = req.ip || req.socket.remoteAddress || '';
+      if (!validatePayFastIP(clientIP)) {
+        console.error('❌ Invalid PayFast IP:', clientIP);
+        return res.status(403).send('Invalid IP');
+      }
+      
+      // 3. Extract payment information
+      const {
+        payment_status,
+        amount_gross,
+        token,
+        email_address,
+        name_first,
+        name_last,
+        custom_str1, // Can use for project ID
+        subscription_type,
+        billing_date,
+      } = pfData;
+      
+      // 4. Determine if this is a subscription or one-time payment
+      const isRecurring = subscription_type === '1';
+      
+      // 5. Parse payment status
+      const status = parsePayFastStatus(payment_status as string);
+      
+      // 6. Create or update donation record
+      if (status === 'completed') {
+        const donorName = `${name_first || ''} ${name_last || ''}`.trim();
+        
+        // Check if this is a new subscription or a recurring payment
+        const existingDonation = token 
+          ? await storage.getDonationBySubscriptionId(token as string)
+          : null;
+        
+        if (existingDonation && isRecurring) {
+          // This is a recurring payment - create new donation record
+          const nextPaymentDate = billing_date 
+            ? calculateNextPaymentDate(new Date(billing_date as string), 'monthly')
+            : calculateNextPaymentDate(new Date(), 'monthly');
+          
+          await storage.createDonation({
+            amount: (amount_gross as string),
+            currency: 'ZAR',
+            donorName: donorName || undefined,
+            donorEmail: email_address as string || undefined,
+            paymentMethod: 'payfast',
+            isRecurring: true,
+            subscriptionId: token as string,
+            frequency: 'monthly', // Default, update based on actual frequency
+            nextPaymentDate: nextPaymentDate,
+            subscriptionStatus: 'active',
+          });
+          
+          console.log('✅ Created recurring donation for subscription:', token);
+        } else {
+          // This is a new subscription - create initial donation
+          const frequency = 'monthly'; // You can parse this from the request
+          const nextPaymentDate = billing_date 
+            ? calculateNextPaymentDate(new Date(billing_date as string), frequency)
+            : calculateNextPaymentDate(new Date(), frequency);
+          
+          await storage.createDonation({
+            amount: (amount_gross as string),
+            currency: 'ZAR',
+            donorName: donorName || undefined,
+            donorEmail: email_address as string || undefined,
+            projectId: custom_str1 as string || undefined,
+            paymentMethod: 'payfast',
+            isRecurring: isRecurring,
+            subscriptionId: token as string,
+            frequency: isRecurring ? frequency : undefined,
+            nextPaymentDate: isRecurring ? nextPaymentDate : undefined,
+            subscriptionStatus: isRecurring ? 'active' : undefined,
+          });
+          
+          console.log('✅ Created new donation/subscription:', token);
+        }
+      }
+      
+      // Respond to PayFast
+      res.status(200).send('OK');
+    } catch (error: any) {
+      console.error('Error processing PayFast ITN:', error);
+      res.status(500).send('Error processing notification');
+    }
+  });
+
+  /**
+   * Cancel a PayFast subscription
+   */
+  app.post("/api/payfast/cancel-subscription", async (req, res) => {
+    try {
+      const { token } = req.body;
+      
+      if (!token) {
+        return res.status(400).json({ 
+          error: "Bad Request", 
+          message: "Subscription token is required" 
+        });
+      }
+      
+      // Update donation record to mark subscription as cancelled
+      const donation = await storage.getDonationBySubscriptionId(token);
+      
+      if (!donation) {
+        return res.status(404).json({ 
+          error: "Not Found", 
+          message: "Subscription not found" 
+        });
+      }
+      
+      // Update subscription status
+      await storage.updateDonationSubscriptionStatus(token, 'cancelled');
+      
+      // Note: PayFast doesn't provide an API to cancel subscriptions programmatically
+      // Users need to cancel via their PayFast account or you need to contact PayFast
+      
+      res.json({ 
+        success: true,
+        message: "Subscription marked as cancelled. Please also cancel via PayFast dashboard."
+      });
+    } catch (error: any) {
+      console.error('Error cancelling subscription:', error);
+      res.status(500).json({ 
+        error: "Failed to cancel subscription",
+        message: error.message
+      });
+    }
+  });
+
+  /**
+   * Get subscription status
+   */
+  app.get("/api/payfast/subscription-status/:token", async (req, res) => {
+    try {
+      const { token } = req.params;
+      
+      const donation = await storage.getDonationBySubscriptionId(token);
+      
+      if (!donation) {
+        return res.status(404).json({ 
+          error: "Not Found", 
+          message: "Subscription not found" 
+        });
+      }
+      
+      res.json({
+        subscriptionId: donation.subscriptionId,
+        status: donation.subscriptionStatus,
+        amount: donation.amount,
+        frequency: donation.frequency,
+        nextPaymentDate: donation.nextPaymentDate,
+        donorName: donation.donorName,
+        donorEmail: donation.donorEmail,
+      });
+    } catch (error: any) {
+      console.error('Error fetching subscription status:', error);
+      res.status(500).json({ 
+        error: "Failed to fetch subscription status",
+        message: error.message
+      });
+    }
+  });
+
+  const httpServer = createServer(app);
+
+  return httpServer;
+}
