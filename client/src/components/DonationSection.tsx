@@ -471,12 +471,12 @@ export default function DonationSection() {
                   </h4>
                   
                   {/* Preset Amounts */}
-                  <div className="flex gap-3 mb-4">
+                  <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-3 mb-4">
                     {presetAmounts.map((preset) => (
                       <Button
                         key={preset.value}
                         variant={selectedAmount === preset.value ? "default" : "outline"}
-                        className={`px-6 py-3 text-lg font-semibold ${
+                        className={`px-4 sm:px-6 py-3 text-base sm:text-lg font-semibold ${
                           selectedAmount === preset.value 
                             ? "bg-primary hover:bg-primary/90" 
                             : ""
