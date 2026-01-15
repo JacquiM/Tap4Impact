@@ -39,8 +39,8 @@
 
 ### 7. **Updated Donation Component** (`client/src/components/DonationSection.tsx`)
    - **Monthly donations** → PayFast (recurring)
-   - **One-time donations** → Yoco (instant)
-   - Automatic routing based on donation type
+   - **One-time donations** → PayFast (once-off)
+   - All payments use PayFast and ZAR
    - Clear user messaging about payment method
 
 ### 8. **Success & Cancellation Pages**
@@ -59,13 +59,13 @@
 
 ## 🔄 Payment Flow
 
-### One-Time Donation (Yoco)
+### One-Time Donation (PayFast)
 ```
 User selects "Give Once" 
-  → Enters amount & details 
-  → Yoco SDK popup 
-  → Card payment 
-  → Success message
+   → Enters amount & details 
+   → Redirect to PayFast 
+   → Complete payment on PayFast 
+   → Success message
 ```
 
 ### Recurring Donation (PayFast)

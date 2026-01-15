@@ -64,9 +64,6 @@ PAYFAST_MERCHANT_KEY=46f0cd694581a        # Sandbox: 46f0cd694581a
 PAYFAST_PASSPHRASE=your_passphrase        # Optional but recommended
 PAYFAST_MODE=sandbox                      # or 'live' for production
 
-# Yoco Configuration (existing)
-YOCO_PUBLIC_KEY=pk_test_5d0d5f771WOYrd3899d4
-YOCO_SECRET_KEY=sk_test_your_secret_key
 ```
 
 ### Frontend Configuration

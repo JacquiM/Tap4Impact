@@ -11,6 +11,61 @@ export interface RecurringDonorInfo extends DonorInfo {
 }
 
 class PayFastService {
+    async processSinglePayment(
+      amount: number,
+      donorInfo: DonorInfo,
+      itemDescription: string = 'Donation'
+    ): Promise<void> {
+      try {
+        // Step 1: Prepare payload for signature
+        const payload = {
+          name_first: donorInfo.name.trim(),
+          email_address: donorInfo.email.trim(),
+          amount: amount.toFixed(2).replace('.', ',')
+        };
+
+        // Step 2: Call backend to get signature for single payment
+        const signatureEndpoint = 'https://tap4functions-f5cxaebacke5etbu.southafricanorth-01.azurewebsites.net/api/GenerateSingleSignature?code=I_2sMdkLcMos3ixlowrcBqjv8kvTS8z0fN3xHE2YFH0LAzFu93m4VQ==';
+        let response;
+        try {
+          response = await fetch(signatureEndpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+        } catch (fetchError) {
+          console.error('❌ Network error calling GenerateSingleSignature:', fetchError);
+          throw new Error(`Network error: ${fetchError instanceof Error ? fetchError.message : 'Failed to fetch'}`);
+        }
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('❌ Signature endpoint error:', errorText);
+          throw new Error(`Failed to get signature: ${response.status} - ${errorText}`);
+        }
+
+        const { signature } = await response.json();
+        console.log('✅ Received single payment signature:', signature);
+        debugger;
+        // Step 3: Build form data for PayFast
+        const formData = {
+          merchant_id: ENV_CONFIG.PAYFAST_MERCHANT_ID,
+          merchant_key: ENV_CONFIG.PAYFAST_MERCHANT_KEY,
+          return_url: "https://tap4impact.co.za",
+          cancel_url: "https://tap4impact.co.za",
+          name_first: donorInfo.name.trim(),
+          email_address: donorInfo.email.trim(),
+          amount: amount.toFixed(2),
+          item_name: "Donation",
+          currency: "ZAR"
+        };
+
+        this.submitPaymentForm(formData);
+      } catch (error) {
+        console.error('❌ Single payment initiation failed:', error);
+        throw error;
+      }
+    }
   private azureFunctionUrl = 'https://tap4functions-f5cxaebacke5etbu.southafricanorth-01.azurewebsites.net/api/GetSigniture?code=I_2sMdkLcMos3ixlowrcBqjv8kvTS8z0fN3xHE2YFH0LAzFu93m4VQ==';
 
   async processRecurringPayment(

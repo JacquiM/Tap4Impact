@@ -5,7 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Heart, Loader2 } from "lucide-react";
-import { yocoService, type DonorInfo } from "@/services/yoco";
+// ...existing code...
+import { type DonorInfo } from "@/services/payfast";
 import { payFastService, type RecurringDonorInfo } from "@/services/payfast";
 import { useToast } from "@/hooks/use-toast";
 import impactImage from "@assets/WhatsApp Image 2025-09-15 at 21.01.33_a1649a4f_1757962936453.jpg";
@@ -317,60 +318,21 @@ export default function DonationSection() {
         // Don't re-enable button - we're navigating away to PayFast
         // Button will be re-enabled when user returns to the page
       } else {
-        // Use Yoco for one-time donations
-        console.log('Processing one-time payment with Yoco, amount:', amount);
-        
-        // Check SDK status
-        const sdkStatus = yocoService.getSDKStatus();
-        console.log('Yoco SDK Status:', sdkStatus);
-        
-        if (!sdkStatus.loaded) {
-          const errorMessage = sdkStatus.error || "Payment system is currently unavailable. Please check your internet connection and try again.";
-          toast({
-            title: "Payment System Unavailable",
-            description: errorMessage,
-            variant: "destructive",
-          });
-          setIsProcessing(false);
-          return;
-        }
-        
+        // Use PayFast for one-time donations
+        console.log('Processing one-time payment with PayFast, amount:', amount);
         const donorInfo: DonorInfo = {
           name: donorName.trim(),
-          email: donorEmail.trim(),
-          phone: "", // Phone field not currently in form
+          email: donorEmail.trim()
         };
-
-        try {
-          const result = await yocoService.processPayment(amount, donorInfo);
-
-          if (result.success) {
-            toast({
-              title: "Payment Successful!",
-              description: `Thank you for your donation of ${formatCurrency(amount)}. Your contribution will help support agricultural safety initiatives.`,
-            });
-            
-            // Reset form
-            setDonorName("");
-            setDonorEmail("");
-            setCustomAmount("");
-            setSelectedAmount(315);
-            setCoverFees(false);
-          }
-        } catch (yocoError: any) {
-          // Handle Yoco payment errors (user cancelled or payment failed)
-          if (yocoError.message && !yocoError.message.includes('cancelled')) {
-            toast({
-              title: "Payment Error",
-              description: yocoError.message,
-              variant: "destructive",
-            });
-          }
-          // If user just closed the modal, don't show an error
-        }
-        
-        // Always re-enable button for one-time donations (whether success, error, or cancelled)
-        setIsProcessing(false);
+        await payFastService.processSinglePayment(
+          amount,
+          donorInfo,
+          'Tap4Impact Once-off Donation'
+        );
+        toast({
+          title: "Redirecting to PayFast",
+          description: "You will be redirected to complete your donation.",
+        });
       }
     } catch (error: any) {
       console.error('Payment error:', error);

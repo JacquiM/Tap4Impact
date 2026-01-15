@@ -193,7 +193,6 @@ console.log('Next annual payment:', nextAnnual);
 ### 1. Donation Button with Conditional Logic
 
 ```tsx
-import { yocoService } from '@/services/yoco';
 import { payFastService } from '@/services/payfast';
 
 const DonationButton = () => {
@@ -215,15 +214,13 @@ const DonationButton = () => {
       );
       payFastService.submitPayment(formData);
     } else {
-      // Use Yoco for one-time
-      const result = await yocoService.processPayment(amount, {
-        ...donorInfo,
-        phone: ''
-      });
-      
-      if (result.success) {
-        console.log('Payment successful!');
-      }
+      // Use PayFast for one-time
+      await payFastService.processSinglePayment(
+        amount,
+        donorInfo,
+        'Tap4Impact Once-off Donation'
+      );
+      console.log('Redirected to PayFast for single payment!');
     }
   };
 
@@ -233,7 +230,7 @@ const DonationButton = () => {
         Give Monthly (PayFast)
       </button>
       <button onClick={() => setDonationType('once')}>
-        Give Once (Yoco)
+        Give Once (PayFast)
       </button>
       
       <button onClick={handleDonate}>
