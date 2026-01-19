@@ -54,7 +54,7 @@ const getEnvironment = () => {
 };
 
 const environment = getEnvironment();
-export const ENV_CONFIG = config[environment] || config.development;
+export const ENV_CONFIG: EnvironmentConfig = config[environment] || config.development;
 
 // Helper to check if backend features are available
 export const isBackendEnabled = (): boolean => {
